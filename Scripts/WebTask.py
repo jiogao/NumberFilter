@@ -117,7 +117,7 @@ def sendData_wangyi(driver):
     # js = "alert(\"Hello World!\");"
     # driver.execute_async_script(js)
 
-    time.sleep(1000)
+    # time.sleep(1000)
 
 
 def runWebTask():
