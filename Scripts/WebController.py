@@ -31,7 +31,7 @@ class WebController():
         opt = webdriver.ChromeOptions()
 
         #修改日志级别
-        opt.add_argument('log-level=3')
+        # opt.add_argument('log-level=3')
         opt.add_argument('--no-sandbox')
         opt.add_argument('--disable-gpu')
 
