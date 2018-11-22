@@ -1,4 +1,11 @@
 # NumberFilter
+provisional headers are shown
+pip install selenium
+
+pip install Pyinstaller
+
+pyinstaller .\Scripts\Main.py -w -F
+
 
 https://www.cnblogs.com/zhaof/p/6953241.html
 https://www.cnblogs.com/luozx207/p/9003214.html
@@ -16,6 +23,7 @@ https://www.cnblogs.com/z-x-y/p/9026226.html
 隐藏 chromedriver.exe 修改selenium包中的service.py
 https://blog.csdn.net/La_vie_est_belle/article/details/81252588
 https://www.cnblogs.com/gaigaige/p/7881130.html
+https://stackoverflow.com/questions/33983860/hide-chromedriver-console-in-python?rq=1
 
 self.process = subprocess.Popen(cmd, env=self.env,
     close_fds=platform.system() != 'Windows',
@@ -25,8 +33,12 @@ self.process = subprocess.Popen(cmd, env=self.env,
     creationflags=subprocess.CREATE_NO_WINDOW) <- add code
 
 
-pip install selenium
+切换frame
+https://blog.csdn.net/huilan_same/article/details/52200586
+driver.switch_to.frame(frame)
 
-pip install Pyinstaller
-
-pyinstaller .\Scripts\Main.py -w -F
+取值
+textValue = elem_Txt.get_attribute("value")
+textValue = driver.execute_script("return arguments[0].value", elem_Txt)
+赋值
+driver.execute_script("return arguments[0].value='1234=1'", elem_Txt)

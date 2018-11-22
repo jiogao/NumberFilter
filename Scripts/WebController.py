@@ -13,12 +13,15 @@ import tkinter.messagebox
 import time
 
 import NFLog
+import NFConfig
 
 class WebController():
     driver = None
 
     userName = None
     passWord = None
+    numList = None
+
     def __init__(self):
         pass
 
@@ -36,7 +39,7 @@ class WebController():
         opt.add_argument('--disable-gpu')
 
         # # 把chrome设置成无界面模式，不论windows还是linux都可以，自动适配对应参数
-        opt.set_headless()
+        # opt.set_headless()
         # opt.add_argument('headless')
 
         # 隐藏受到自动软件的控制提示
@@ -157,11 +160,14 @@ class WebController():
         elem_submit = driver.find_element_by_xpath("//body[@class='spb']/div[@class='contianer login-contianer']\
         /div[@class='login-area']/div[@class='login-form']/form/ul/li/input[@class='regsiter-btn']")
         elem_submit.click()
+        
+        NFLog.info("开始登录")
 
+        # wait 同意协议
         try:
             WebDriverWait(driver,5,0.5).until(
                 EC.presence_of_element_located((By.ID, 'Submit2')))
-        except (Exception) as e:
+        except (Exception):
             NFLog.error("登录失败")
             # tkinter.messagebox.showinfo( "error", e)
             
@@ -176,18 +182,66 @@ class WebController():
             # self.driver.close()
             pass
             
-        
+        # wait 指定页面
+        WebDriverWait(driver,5,0.5).until(
+            EC.presence_of_element_located((By.ID, 'TabMenuBox')))
+        time.sleep(1)
+        elem_tabMenuBox = driver.find_element_by_id("TabMenuBox")
+        btn_txtImport = elem_tabMenuBox.find_element_by_xpath(".//li/a[@href='/BetPanel/FastTranslate/Index']")
+        btn_txtImport.click()
 
+        NFLog.info("进入指定页面")
+
+        # 内容输入
+        WebDriverWait(driver,5,0.5).until(
+            EC.presence_of_element_located((By.ID, 'CleverTxt')))
+        elem_CleverTxt = driver.find_element_by_id("CleverTxt")
+        # driver.execute_script("return arguments[0].value='1234=1'", elem_CleverTxt)
+        numStr = ""
+        for item in self.numList:
+            numStr += item + "=0.1\n"
+        elem_CleverTxt.send_keys(numStr)
+        textValue = driver.execute_script("return arguments[0].value", elem_CleverTxt)
+        NFLog.info('提交数据:\n', textValue)
+
+        # 提交
+        self.elem_CleverTxt = elem_CleverTxt
+
+        elem_Container = driver.find_element_by_id("Container")
+        elem_inputW = elem_Container.find_element_by_xpath(".//div[@class='table-out']/form/table/tbody/tr/td[@class='inputW']")
+        elem_submit = elem_inputW.find_element_by_xpath(".//button[@type='button']")
+        # elem_reset = elem_inputW.find_element_by_xpath(".//button[@type='reset']")
+
+        elem_submit.click()
+
+
+        # # 切换frame
+        # elem_IFRAME = driver.find_element_by_id("IFRAME")
+        # frame_IFRAME = elem_IFRAME.find_element_by_xpath(".//iframe[@src='/InportTxt/Index']")
+        # driver.switch_to.frame(frame_IFRAME)
+
+        # elem_fileInput = driver.find_element_by_xpath(".//html/body/div[@class='table-out']/table[@class='tablecommon tablecommon1 break']\
+        #     /tbody/tr[@class='t-left']/td/input[@type='file']")
+        # self.elem_fileInput = elem_fileInput
+        # NFLog.info("aa1", elem_fileInput.get_attribute("value"))
+        # driver.execute_script(r"arguments[0].value='C:\Users\Administrator\Desktop\testa.txt'", elem_fileInput)
+        # NFLog.info("aa2", elem_fileInput.get_attribute("value"))
+        
+    elem_CleverTxt = None
+    def showExtraInfo(self):
+        if self.driver:
+            NFLog.info(self.elem_CleverTxt.get_attribute("value"))
 
     def clear(self):
         if self.driver:
             # self.driver.close()
             self.driver.quit()
 
-    def startWebTask(self, usr, pwd):
+    def startWebTask(self, usr, pwd, numList):
         NFLog.info("用户:", usr)
         self.usr = usr
         self.pwd = pwd
+        self.numList = numList
         self.driver = self.createBrowser()
         try:
             self.sendData_hy(self.driver)
@@ -207,6 +261,6 @@ class WebController():
 
 if __name__ == "__main__":
     webController = WebController()
-    webController.startWebTask("zbz679", "aaa12345")
+    webController.startWebTask(NFConfig.default_usr, NFConfig.default_pwd, ["0000", "1111"])
     time.sleep(1000)
     
